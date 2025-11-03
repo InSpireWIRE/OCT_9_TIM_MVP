@@ -561,61 +561,65 @@ if colab_url:
                             st.session_state.selected_transcript_name = filename
                             st.rerun()
                 
-                if st.session_state.selected_transcript_name:
-                    st.success(f"Selected: {st.session_state.selected_transcript_name}")
-                    transcript_id = st.session_state.selected_transcript_id
+                # Starting from line 564, replace everything through line 616 with this:
+
+            if st.session_state.selected_transcript_name:
+                st.success(f"Selected: {st.session_state.selected_transcript_name}")
+                transcript_id = st.session_state.selected_transcript_id
+                
+                # ADD DELETE BUTTON HERE
+                col1, col2 = st.columns([4, 1])
+                with col2:
+                    # Initialize confirmation state if not exists
+                    if 'confirm_delete' not in st.session_state:
+                        st.session_state.confirm_delete = False
                     
-                    # ADD DELETE BUTTON HERE
-                    col1, col2 = st.columns([4, 1])
-                    with col2:
+                    # If NOT in confirmation mode, show the delete button
+                    if not st.session_state.confirm_delete:
                         if st.button("🗑️ Delete", key="delete_transcript", 
                                     help="Delete this transcript permanently"):
-                            
-                            # Confirmation dialog
-                            if 'confirm_delete' not in st.session_state:
-                                st.session_state.confirm_delete = False
-                            
-                            if st.session_state.confirm_delete:
-                                st.error("⚠️ Are you SURE? This cannot be undone!")
-                                col_yes, col_no = st.columns(2)
-                                
-                                with col_yes:
-                                    if st.button("Yes, DELETE", key="confirm_yes"):
-                                        if transcript_id:
-                                            try:
-                                                # Call delete endpoint
-                                                response = requests.delete(
-                                                    f"{colab_url}/delete-transcript/{transcript_id}",
-                                                    headers={
-                                                        'X-API-Key': 'tie_smartco1_demo123',
-                                                        'Content-Type': 'application/json',
-                                                        'ngrok-skip-browser-warning': 'true'
-                                                    },
-                                                    timeout=30
-                                                )
-                                                
-                                                if response.status_code == 200:
-                                                    st.success(f"✅ Deleted: {st.session_state.selected_transcript_name}")
-                                                    # Clear session state
-                                                    st.session_state.selected_transcript_id = None
-                                                    st.session_state.selected_transcript_name = None
-                                                    st.session_state.confirm_delete = False
-                                                    time.sleep(1)
-                                                    st.rerun()
-                                                else:
-                                                    st.error(f"Delete failed: {response.text}")
-                                                    st.session_state.confirm_delete = False
-                                                    
-                                            except Exception as e:
-                                                st.error(f"Error: {str(e)}")
-                                                st.session_state.confirm_delete = False
-                                                
-                                with col_no:
-                                    if st.button("Cancel", key="cancel_delete"):
+                            st.session_state.confirm_delete = True
+                            st.rerun()
+                    
+                    # If IN confirmation mode, show the confirmation dialog
+                    else:
+                        st.error("⚠️ Are you SURE? This cannot be undone!")
+                        col_yes, col_no = st.columns(2)
+                        
+                        with col_yes:
+                            if st.button("Yes, DELETE", key="confirm_yes"):
+                                if transcript_id:
+                                    try:
+                                        # Call delete endpoint
+                                        response = requests.delete(
+                                            f"{colab_url}/delete-transcript/{transcript_id}",
+                                            headers={
+                                                'X-API-Key': 'tie_smartco1_demo123',
+                                                'Content-Type': 'application/json',
+                                                'ngrok-skip-browser-warning': 'true'
+                                            },
+                                            timeout=30
+                                        )
+                                        
+                                        if response.status_code == 200:
+                                            st.success(f"✅ Deleted: {st.session_state.selected_transcript_name}")
+                                            # Clear session state
+                                            st.session_state.selected_transcript_id = None
+                                            st.session_state.selected_transcript_name = None
+                                            st.session_state.confirm_delete = False
+                                            time.sleep(1)
+                                            st.rerun()
+                                        else:
+                                            st.error(f"Delete failed: {response.text}")
+                                            st.session_state.confirm_delete = False
+                                            
+                                    except Exception as e:
+                                        st.error(f"Error: {str(e)}")
                                         st.session_state.confirm_delete = False
-                                        st.rerun()
-                            else:
-                                st.session_state.confirm_delete = True
+                                
+                        with col_no:
+                            if st.button("Cancel", key="cancel_delete"):
+                                st.session_state.confirm_delete = False
                                 st.rerun()
         else:
             st.warning("No transcripts found. Upload a transcript first.")
