@@ -820,7 +820,7 @@ if colab_url:
                         f"{colab_url}/drama-detection-ai",
                         json={"min_score": 7.0, "transcript_id": transcript_id},
                         headers={"X-API-Key": "tie_smartco1_demo123"},
-                        timeout=30
+                        timeout=120
                     )
                     
                     if response.status_code == 200:
