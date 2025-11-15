@@ -331,6 +331,16 @@ st.markdown("""
         font-weight: 600;
     }
 
+    /* Hide the duplicate upload instructions */
+    [data-testid="stFileUploaderDropzoneInstructions"] {
+        display: none !important;
+    }
+    
+    /* Actually hide the drag and drop text */
+    section[data-testid="stFileUploadDropzone"] small {
+        display: none !important;
+    }
+
     /* "Browse files" button */
     section[data-testid="stFileUploadDropzone"] button {
         background: linear-gradient(135deg, #00F5FF 0%, #0EA5E9 100%) !important;
@@ -590,7 +600,7 @@ if colab_url:
         st.markdown('<div class="panel">', unsafe_allow_html=True)
         st.subheader("Upload Transcript")
         uploaded_file = st.file_uploader(
-            "Choose a transcript file",
+            "",  # Empty label
             type=['docx', 'txt', 'pdf'],
             help="Upload a transcript file to process and make searchable"
         )
