@@ -600,7 +600,7 @@ if colab_url:
         st.markdown('<div class="panel">', unsafe_allow_html=True)
         st.subheader("Upload Transcript")
         uploaded_file = st.file_uploader(
-            "",  # Empty label
+            "Choose a transcript file",
             type=['docx', 'txt', 'pdf'],
             help="Upload a transcript file to process and make searchable"
         )
